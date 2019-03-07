@@ -24,7 +24,7 @@ class ClData
 {
 protected:
   spVectorXu z_; // labels
-  shared_ptr<Matrix<T,Dynamic,Dynamic> > x_; // data
+  boost::shared_ptr<Matrix<T,Dynamic,Dynamic> > x_; // data
 
   uint32_t K_; // number of classes
   uint32_t N_;
@@ -34,9 +34,9 @@ protected:
   Matrix<T,Dynamic,Dynamic> xSums_; // xSums
 
 public:
-  ClData(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, 
+  ClData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, 
       const spVectorXu& z, uint32_t K);
-  ClData(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, uint32_t K);
+  ClData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, uint32_t K);
   ClData(uint32_t D, uint32_t K);
   virtual ~ClData();
 
@@ -48,13 +48,13 @@ public:
   virtual void labelMap(const vector<int32_t>& map);
 
   virtual void updateK(uint32_t K){ K_ = K;};
-  virtual void updateData(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& x);
+  virtual void updateData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x);
   virtual void updateData(T* d_x, uint32_t N, uint32_t step, uint32_t offset);
 
   virtual VectorXu& z() {return *z_;};
   virtual uint32_t& z(uint32_t i) const {return (*z_)(i);};
   virtual const spVectorXu& labels() const {return z_;};
-  virtual const shared_ptr<Matrix<T,Dynamic,Dynamic> >& x() const {return x_;};
+  virtual const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x() const {return x_;};
 
  virtual T* d_x(){ return x_->data();};
  virtual uint32_t* d_z(){ return z_->data();};
@@ -112,7 +112,7 @@ T silhouetteClD(const ClData<T>& cld)
 
 // -------------------------- impl --------------------------------------------
 template<class T>
-ClData<T>::ClData(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, 
+ClData<T>::ClData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, 
     const spVectorXu& z, uint32_t K)
  : z_(z), x_(x), K_(z->maxCoeff()+1), N_(x->cols()), D_(x->rows())
 {
@@ -120,7 +120,7 @@ ClData<T>::ClData(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& x,
 };
 
 template<class T>
-ClData<T>::ClData(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, 
+ClData<T>::ClData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, 
     uint32_t K)
  : z_(new VectorXu(VectorXu::Zero(x->cols()))), x_(x),
   K_(K), N_(x->cols()), D_(x->rows())
@@ -167,7 +167,7 @@ void ClData<T>::updateLabels(uint32_t K)
 }
 
 template<class T>
-void ClData<T>::updateData(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& x)
+void ClData<T>::updateData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x)
 {
   x_ = x;
   assert(D_ == x_->rows());

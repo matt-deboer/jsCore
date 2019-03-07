@@ -33,8 +33,8 @@ struct GpuMatrix
   GpuMatrix(const Matrix<T,Dynamic,Dynamic> & data);
   GpuMatrix(const Matrix<T,Dynamic,1> & data);
   GpuMatrix(const std::vector<T> & data);
-  GpuMatrix(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& data);
-  GpuMatrix(const shared_ptr<Matrix<T,Dynamic,1> > & data);
+  GpuMatrix(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& data);
+  GpuMatrix(const boost::shared_ptr<Matrix<T,Dynamic,1> > & data);
   ~GpuMatrix();
 
   void set(T A);
@@ -44,8 +44,8 @@ struct GpuMatrix
   void set(const std::vector<T>& A);
   void set(const Matrix<T,Dynamic,Dynamic>& A);
   void set(const Matrix<T,Dynamic,1>& A);
-  void set(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& A);
-  void set(const shared_ptr<Matrix<T,Dynamic,1> >& A);
+  void set(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& A);
+  void set(const boost::shared_ptr<Matrix<T,Dynamic,1> >& A);
   void setZero();
   void setOnes();
   void setAsync(const T* A, uint32_t rows, uint32_t cols, cudaStream_t& stream);
@@ -54,8 +54,8 @@ struct GpuMatrix
   void get(Matrix<T,Dynamic,Dynamic>& A);
   void get(T* A, uint32_t rows, uint32_t cols);
   void get(Matrix<T,Dynamic,1>& A);
-  void get(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& A);
-  void get(const shared_ptr<Matrix<T,Dynamic,1> >& A);
+  void get(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& A);
+  void get(const boost::shared_ptr<Matrix<T,Dynamic,1> >& A);
   Matrix<T,Dynamic,Dynamic> get(void)
   {
     Matrix<T,Dynamic,Dynamic> d(rows_,cols_);
@@ -130,7 +130,7 @@ GpuMatrix<T>::GpuMatrix(const std::vector<T> & data)
 };
 
 template <class T>
-GpuMatrix<T>::GpuMatrix(const shared_ptr<Matrix<T,Dynamic,Dynamic> > & data)
+GpuMatrix<T>::GpuMatrix(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> > & data)
   : rows_(data->rows()), cols_(data->cols()), initialized_(false)
 {
 //  cout<<rows_<<"x"<<cols_<<"="<<rows_*cols_<<endl;
@@ -139,7 +139,7 @@ GpuMatrix<T>::GpuMatrix(const shared_ptr<Matrix<T,Dynamic,Dynamic> > & data)
 };
 
 template <class T>
-GpuMatrix<T>::GpuMatrix(const shared_ptr<Matrix<T,Dynamic,1> > & data)
+GpuMatrix<T>::GpuMatrix(const boost::shared_ptr<Matrix<T,Dynamic,1> > & data)
   : rows_(data->rows()), cols_(1), initialized_(false)
 {
 //  cout<<rows_<<"x"<<cols_<<"="<<rows_*cols_<<endl;
@@ -234,7 +234,7 @@ void GpuMatrix<T>::set(const Matrix<T,Dynamic,1>& A)
 };
 
 template <class T>
-void GpuMatrix<T>::set(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& A)
+void GpuMatrix<T>::set(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& A)
 {
   resize(A->rows(),A->cols());
   assert(A->cols() == cols_);
@@ -245,7 +245,7 @@ void GpuMatrix<T>::set(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& A)
 };
 
 template <class T>
-void GpuMatrix<T>::set(const shared_ptr<Matrix<T,Dynamic,1> >& A)
+void GpuMatrix<T>::set(const boost::shared_ptr<Matrix<T,Dynamic,1> >& A)
 {
   resize(A->rows(),A->cols());
   assert(A->cols() == cols_);
@@ -313,7 +313,7 @@ void GpuMatrix<T>::get(Matrix<T,Dynamic,1>& A)
 };
 
 template <class T>
-void GpuMatrix<T>::get(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& A)
+void GpuMatrix<T>::get(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& A)
 {
   A->resize(rows_,cols_);
   assert(A->cols() == cols_);
@@ -323,7 +323,7 @@ void GpuMatrix<T>::get(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& A)
 };
 
 template <class T>
-void GpuMatrix<T>::get(const shared_ptr<Matrix<T,Dynamic,1> >& A)
+void GpuMatrix<T>::get(const boost::shared_ptr<Matrix<T,Dynamic,1> >& A)
 {
   A->resize(rows_);
   assert(A->cols() == cols_);

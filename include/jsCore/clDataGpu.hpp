@@ -33,9 +33,9 @@ protected:
   GpuMatrix<T> d_Ss_; // sufficient statistics
  
 public: 
-  ClDataGpu(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, 
+  ClDataGpu(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, 
       const spVectorXu& z, uint32_t K);
-  ClDataGpu(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, uint32_t K);
+  ClDataGpu(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, uint32_t K);
   ClDataGpu(uint32_t D, uint32_t K);
   virtual ~ClDataGpu(){;};
 
@@ -44,11 +44,11 @@ public:
   virtual void computeSS();
 
   virtual void updateK(uint32_t K){ this->K_ = K;};
-  virtual void updateData(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& x);
+  virtual void updateData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x);
   virtual void updateData(T* d_x, uint32_t N, uint32_t step, uint32_t offset);
 
   virtual VectorXu& z() { this->d_z_.get(this->z_); return ClData<T>::z();};
-//  virtual const shared_ptr<Matrix<T,Dynamic,Dynamic> >& x()
+//  virtual const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x()
 //  {
 //    this->d_x_.get(this->x_); return this->x_;
 //  };
@@ -65,13 +65,13 @@ typedef ClDataGpu<float> ClDataGpuf;
 
 // ------------------------------------ impl --------------------------------
 template<typename T>
-ClDataGpu<T>::ClDataGpu(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, 
+ClDataGpu<T>::ClDataGpu(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, 
     const spVectorXu& z, uint32_t K)
   : ClData<T>(x,z,K), d_z_(this->z_), d_x_(this->x_), d_Ss_((this->D_-1)+1,this->K_)
 {cout<<"ClDataGpu constructed"<<endl;};
 
 template<typename T>
-ClDataGpu<T>::ClDataGpu(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, 
+ClDataGpu<T>::ClDataGpu(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, 
     uint32_t K)
   : ClData<T>(x,K), d_z_(this->z_), d_x_(this->x_), d_Ss_((this->D_-1)+1,this->K_)
 {cout<<"ClDataGpu constructed"<<endl;};
@@ -93,7 +93,7 @@ void ClDataGpu<T>::updateLabels(uint32_t K)
 }
 
 template<class T>
-void ClDataGpu<T>::updateData(const shared_ptr<Matrix<T,Dynamic,Dynamic> >& x)
+void ClDataGpu<T>::updateData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x)
 {
   ClData<T>::updateData(x);
   d_x_.set(this->x_);
