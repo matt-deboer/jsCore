@@ -9,7 +9,6 @@
 
 #include <jsCore/global.hpp>
 
-using namespace Eigen;
 using std::vector;
 using std::cout;
 using std::endl;
@@ -24,19 +23,19 @@ class ClData
 {
 protected:
   spVectorXu z_; // labels
-  boost::shared_ptr<Matrix<T,Dynamic,Dynamic> > x_; // data
+  boost::shared_ptr<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> > x_; // data
 
   uint32_t K_; // number of classes
   uint32_t N_;
   uint32_t D_;
 
-  Matrix<T,Dynamic,1> Ns_; // counts
-  Matrix<T,Dynamic,Dynamic> xSums_; // xSums
+  Eigen::Matrix<T,Eigen::Dynamic,1> Ns_; // counts
+  Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> xSums_; // xSums
 
 public:
-  ClData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, 
+  ClData(const boost::shared_ptr<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> >& x, 
       const spVectorXu& z, uint32_t K);
-  ClData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, uint32_t K);
+  ClData(const boost::shared_ptr<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> >& x, uint32_t K);
   ClData(uint32_t D, uint32_t K);
   virtual ~ClData();
 
@@ -48,27 +47,27 @@ public:
   virtual void labelMap(const vector<int32_t>& map);
 
   virtual void updateK(uint32_t K){ K_ = K;};
-  virtual void updateData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x);
+  virtual void updateData(const boost::shared_ptr<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> >& x);
   virtual void updateData(T* d_x, uint32_t N, uint32_t step, uint32_t offset);
 
   virtual VectorXu& z() {return *z_;};
   virtual uint32_t& z(uint32_t i) const {return (*z_)(i);};
   virtual const spVectorXu& labels() const {return z_;};
-  virtual const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x() const {return x_;};
+  virtual const boost::shared_ptr<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> >& x() const {return x_;};
 
  virtual T* d_x(){ return x_->data();};
  virtual uint32_t* d_z(){ return z_->data();};
 
-  virtual const Matrix<T,Dynamic,Dynamic>& xMat() const {return (*x_);};
+  virtual const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic>& xMat() const {return (*x_);};
   virtual uint32_t N() const {return N_;};
   virtual uint32_t K() const {return K_;};
   virtual uint32_t D() const {return D_;};
 
-  virtual const Matrix<T,Dynamic,1>& counts() const {return Ns_;};
+  virtual const Eigen::Matrix<T,Eigen::Dynamic,1>& counts() const {return Ns_;};
   virtual T count(uint32_t k) const {return Ns_(k);};
 
-  virtual const Matrix<T,Dynamic,Dynamic>& xSums() const {return xSums_;};
-  virtual Matrix<T,Dynamic,1> xSum(uint32_t k) const {return xSums_.col(k);};
+  virtual const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic>& xSums() const {return xSums_;};
+  virtual Eigen::Matrix<T,Eigen::Dynamic,1> xSum(uint32_t k) const {return xSums_.col(k);};
 
 
 };
@@ -81,11 +80,11 @@ T silhouetteClD(const ClData<T>& cld)
 { 
   if(cld.K()<2) return -1.0;
 //  assert(Ns_.sum() == N_);
-  Matrix<T,Dynamic,1> sil(cld.N());
+  Eigen::Matrix<T,Eigen::Dynamic,1> sil(cld.N());
 #pragma omp parallel for
   for(uint32_t i=0; i<cld.N(); ++i)
   {
-    Matrix<T,Dynamic,1> b = Matrix<T,Dynamic,1>::Zero(cld.K());
+    Eigen::Matrix<T,Eigen::Dynamic,1> b = Eigen::Matrix<T,Eigen::Dynamic,1>::Zero(cld.K());
     for(uint32_t j=0; j<cld.N(); ++j)
       if(j != i)
       {
@@ -112,7 +111,7 @@ T silhouetteClD(const ClData<T>& cld)
 
 // -------------------------- impl --------------------------------------------
 template<class T>
-ClData<T>::ClData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, 
+ClData<T>::ClData(const boost::shared_ptr<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> >& x, 
     const spVectorXu& z, uint32_t K)
  : z_(z), x_(x), K_(z->maxCoeff()+1), N_(x->cols()), D_(x->rows())
 {
@@ -120,7 +119,7 @@ ClData<T>::ClData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x,
 };
 
 template<class T>
-ClData<T>::ClData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x, 
+ClData<T>::ClData(const boost::shared_ptr<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> >& x, 
     uint32_t K)
  : z_(new VectorXu(VectorXu::Zero(x->cols()))), x_(x),
   K_(K), N_(x->cols()), D_(x->rows())
@@ -139,7 +138,7 @@ ClData<T>::ClData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x,
 
 template<class T>
 ClData<T>::ClData(uint32_t D, uint32_t K)
- : z_(new VectorXu(VectorXu::Zero(0))), x_(new Matrix<T,Dynamic,Dynamic>(D,0)), K_(K), N_(0),
+ : z_(new VectorXu(VectorXu::Zero(0))), x_(new Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic>(D,0)), K_(K), N_(0),
   D_(D)
 {
   cout<<"D="<<D_<<" N="<<N_<<" K="<<K_<<endl;
@@ -167,7 +166,7 @@ void ClData<T>::updateLabels(uint32_t K)
 }
 
 template<class T>
-void ClData<T>::updateData(const boost::shared_ptr<Matrix<T,Dynamic,Dynamic> >& x)
+void ClData<T>::updateData(const boost::shared_ptr<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> >& x)
 {
   x_ = x;
   assert(D_ == x_->rows());

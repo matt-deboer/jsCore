@@ -12,7 +12,6 @@
 #include <jsCore/clData.hpp>
 #include <jsCore/timer.hpp>
 
-using namespace Eigen;
 using std::vector;
 
 extern void vectorSum_gpu( double *d_x, uint32_t *d_z , uint32_t N, 
